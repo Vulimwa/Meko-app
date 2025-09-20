@@ -1,0 +1,23 @@
+{
+  "name": "meko-moja-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Meko Moja clean cooking awareness campaign",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve . --listen 8080",
+    "build": "echo 'No build step needed for vanilla HTML/CSS/JS'",
+    "test": "echo 'Tests not implemented yet'",
+    "lighthouse": "lighthouse http://localhost:8080 --output html --output-path ./lighthouse-report.html"
+  },
+  "keywords": ["clean-cooking", "community", "awareness", "east-africa"],
+  "author": "Meko Moja Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1",
+    "lighthouse": "^11.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

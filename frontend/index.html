@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meko Moja - One Stove Community</title>
+    <meta name="description" content="Share your clean cooking journey and learn from the community">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Added Leaflet CSS for map functionality -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <span class="logo-icon">🔥</span>
+                Meko Moja
+            </h1>
+            <button class="add-story-btn" id="addStoryBtn" aria-label="Add new story">
+                <span class="plus-icon">+</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Top Navigation (Desktop) -->
+    <nav class="top-nav">
+        <div class="top-nav-container">
+            <button class="nav-item active" data-tab="feedTab">
+                <span class="nav-icon">📱</span>
+                <span class="nav-label">Feed</span>
+            </button>
+            <button class="nav-item" data-tab="calculatorTab">
+                <span class="nav-icon">💰</span>
+                <span class="nav-label">Calculator</span>
+            </button>
+            <button class="nav-item" data-tab="forumTab">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">Forum</span>
+            </button>
+            <button class="nav-item" data-tab="mapTab">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-label">Map</span>
+            </button>
+        </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Story Feed Tab -->
+        <section class="tab-content active" id="feedTab">
+            <div class="container">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <label for="fuelFilter" class="sr-only">Filter by fuel type</label>
+                    <select id="fuelFilter" class="fuel-filter">
+                        <option value="">All Fuel Types</option>
+                        <option value="LPG">LPG</option>
+                        <option value="electric">Electric</option>
+                        <option value="improved_biomass">Improved Biomass</option>
+                        <option value="charcoal">Charcoal</option>
+                    </select>
+                </div>
+
+                <!-- Stories Feed -->
+                <div class="stories-feed" id="storiesFeed">
+                    <div class="loading" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p>Loading stories...</p>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <button class="load-more-btn" id="loadMoreBtn" style="display: none;">
+                    Load More Stories
+                </button>
+            </div>
+        </section>
+
+        <!-- Calculator Tab -->
+        <section class="tab-content" id="calculatorTab">
+            <div class="container">
+                <h2 class="section-title">Cost & CO₂ Savings Calculator</h2>
+                
+                <!-- Replaced placeholder with full calculator interface -->
+                <div class="calculator-container">
+                    <div class="calculator-card">
+                        <div class="calculator-header">
+                            <h3>Calculate Your Savings</h3>
+                            <p>See how much you can save by switching to clean cooking fuels</p>
+                        </div>
+
+                        <form class="calculator-form" id="calculatorForm">
+                            <div class="input-section">
+                                <h4>Current Cooking Costs</h4>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="currentFuel">Current Fuel Type</label>
+                                        <select id="currentFuel" name="currentFuel" required>
+                                            <option value="">Select current fuel</option>
+                                            <option value="charcoal">Charcoal</option>
+                                            <option value="kerosene">Kerosene</option>
+                                            <option value="firewood">Firewood</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="dailySpend">Daily Spend (KES)</label>
+                                        <input type="number" id="dailySpend" name="dailySpend" 
+                                               min="0" step="0.01" placeholder="e.g., 150" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="mealsPerDay">Meals Cooked Per Day</label>
+                                        <input type="number" id="mealsPerDay" name="mealsPerDay" 
+                                               min="1" max="10" value="3" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="householdSize">Household Size</label>
+                                        <input type="number" id="householdSize" name="householdSize" 
+                                               min="1" max="20" value="4" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-section">
+                                <h4>Clean Fuel Option</h4>
+                                
+                                <div class="fuel-options">
+                                    <label class="fuel-option">
+                                        <input type="radio" name="cleanFuel" value="LPG" required>
+                                        <div class="fuel-option-content">
+                                            <span class="fuel-icon">🔥</span>
+                                            <div>
+                                                <strong>LPG Gas</strong>
+                                                <p>Clean, fast, convenient</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="fuel-option">
+                                        <input type="radio" name="cleanFuel" value="electric" required>
+                                        <div class="fuel-option-content">
+                                            <span class="fuel-icon">⚡</span>
+                                            <div>
+                                                <strong>Electric</strong>
+                                                <p>Zero emissions, precise control</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="fuel-option">
+                                        <input type="radio" name="cleanFuel" value="improved_biomass" required>
+                                        <div class="fuel-option-content">
+                                            <span class="fuel-icon">🌿</span>
+                                            <div>
+                                                <strong>Improved Biomass</strong>
+                                                <p>Efficient, less smoke</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="calculate-btn">
+                                <span class="btn-text">Calculate Savings</span>
+                                <span class="btn-spinner" style="display: none;">
+                                    <div class="spinner-small"></div>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <div class="results-card">
+                            <div class="results-header">
+                                <h3>Your Potential Savings</h3>
+                                <button class="share-result-btn" id="shareResultBtn">Share My Result</button>
+                            </div>
+
+                            <div class="savings-grid">
+                                <div class="savings-item">
+                                    <div class="savings-icon">💰</div>
+                                    <div class="savings-content">
+                                        <h4>Monthly Savings</h4>
+                                        <div class="savings-amount" id="monthlySavings">KES 0</div>
+                                        <div class="savings-percentage" id="monthlyPercentage">0% less</div>
+                                    </div>
+                                </div>
+
+                                <div class="savings-item">
+                                    <div class="savings-icon">📅</div>
+                                    <div class="savings-content">
+                                        <h4>Yearly Savings</h4>
+                                        <div class="savings-amount" id="yearlySavings">KES 0</div>
+                                        <div class="savings-percentage" id="yearlyPercentage">0% less</div>
+                                    </div>
+                                </div>
+
+                                <div class="savings-item">
+                                    <div class="savings-icon">🌱</div>
+                                    <div class="savings-content">
+                                        <h4>CO₂ Reduced</h4>
+                                        <div class="savings-amount" id="co2Savings">0 kg</div>
+                                        <div class="savings-percentage">per year</div>
+                                    </div>
+                                </div>
+
+                                <div class="savings-item">
+                                    <div class="savings-icon">⏱️</div>
+                                    <div class="savings-content">
+                                        <h4>Time Saved</h4>
+                                        <div class="savings-amount" id="timeSavings">0 hours</div>
+                                        <div class="savings-percentage">per week</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="comparison-chart">
+                                <h4>Monthly Cost Comparison</h4>
+                                <div class="chart-container">
+                                    <div class="chart-bar">
+                                        <div class="bar-label">Current Fuel</div>
+                                        <div class="bar-wrapper">
+                                            <div class="bar current-bar" id="currentBar"></div>
+                                            <span class="bar-value" id="currentBarValue">KES 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="chart-bar">
+                                        <div class="bar-label">Clean Fuel</div>
+                                        <div class="bar-wrapper">
+                                            <div class="bar clean-bar" id="cleanBar"></div>
+                                            <span class="bar-value" id="cleanBarValue">KES 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="impact-summary">
+                                <h4>Environmental Impact</h4>
+                                <div class="impact-grid">
+                                    <div class="impact-item">
+                                        <span class="impact-icon">🏠</span>
+                                        <div>
+                                            <strong>Cleaner Indoor Air</strong>
+                                            <p>Reduced smoke and harmful emissions in your kitchen</p>
+                                        </div>
+                                    </div>
+                                    <div class="impact-item">
+                                        <span class="impact-icon">🌍</span>
+                                        <div>
+                                            <strong>Climate Action</strong>
+                                            <p>Lower carbon footprint helps fight climate change</p>
+                                        </div>
+                                    </div>
+                                    <div class="impact-item">
+                                        <span class="impact-icon">👨‍👩‍👧‍👦</span>
+                                        <div>
+                                            <strong>Family Health</strong>
+                                            <p>Reduced respiratory issues and eye irritation</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forum Tab -->
+        <section class="tab-content" id="forumTab">
+            <div class="container">
+                <h2 class="section-title">Community Forum</h2>
+                
+                <!-- Replaced placeholder with full forum interface -->
+                <div class="forum-container">
+                    <!-- Forum Header -->
+                    <div class="forum-header">
+                        <div class="forum-stats" id="forumStats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalThreads">0</span>
+                                <span class="stat-label">Discussions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalComments">0</span>
+                                <span class="stat-label">Comments</span>
+                            </div>
+                        </div>
+                        <button class="new-thread-btn" id="newThreadBtn">
+                            <span class="plus-icon">+</span>
+                            New Discussion
+                        </button>
+                    </div>
+
+                    <!-- Forum Content -->
+                    <div class="forum-content">
+                        <!-- Thread List -->
+                        <div class="thread-list" id="threadList">
+                            <div class="loading" id="forumLoadingSpinner">
+                                <div class="spinner"></div>
+                                <p>Loading discussions...</p>
+                            </div>
+                        </div>
+
+                        <!-- Thread Detail View -->
+                        <div class="thread-detail" id="threadDetail" style="display: none;">
+                            <div class="thread-detail-header">
+                                <button class="back-btn" id="backToThreadsBtn">
+                                    <span class="back-icon">←</span>
+                                    Back to Discussions
+                                </button>
+                            </div>
+                            
+                            <div class="thread-detail-content" id="threadDetailContent">
+                                <!-- Thread content will be loaded here -->
+                            </div>
+
+                            <div class="comments-section">
+                                <h4>Comments</h4>
+                                <div class="comments-list" id="commentsList">
+                                    <!-- Comments will be loaded here -->
+                                </div>
+
+                                <form class="comment-form" id="commentForm">
+                                    <div class="form-group">
+                                        <label for="commentContent">Add a comment</label>
+                                        <textarea id="commentContent" name="content" required 
+                                                  placeholder="Share your thoughts or ask a question..." 
+                                                  maxlength="300"></textarea>
+                                        <div class="char-count">
+                                            <span id="commentCharCount">0</span>/300
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="commentAuthor">Your Name *</label>
+                                        <input type="text" id="commentAuthor" name="author_name" required maxlength="50">
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-primary">
+                                            <span class="btn-text">Post Comment</span>
+                                            <span class="btn-spinner" style="display: none;">
+                                                <div class="spinner-small"></div>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Tab -->
+        <section class="tab-content" id="mapTab">
+            <div class="container">
+                <h2 class="section-title">Find Vendors</h2>
+                <div class="map-container">
+                    <!-- Map Controls -->
+                    <div class="map-controls">
+                        <div class="location-search">
+                            <input type="text" id="locationSearch" placeholder="Search location..." 
+                                   class="location-input">
+                            <button class="search-btn" id="searchLocationBtn" aria-label="Search location">
+                                <span class="search-icon">🔍</span>
+                            </button>
+                        </div>
+                        
+                        <div class="map-filters">
+                            <label class="filter-label">Show:</label>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" id="showLPG" checked>
+                                    <span class="filter-text">
+                                        <span class="filter-icon lpg-icon">🔥</span>
+                                        LPG Vendors
+                                    </span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" id="showElectric" checked>
+                                    <span class="filter-text">
+                                        <span class="filter-icon electric-icon">⚡</span>
+                                        Electric Suppliers
+                                    </span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" id="showBiomass" checked>
+                                    <span class="filter-text">
+                                        <span class="filter-icon biomass-icon">🌿</span>
+                                        Biomass Stoves
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Display -->
+                    <div class="map-display">
+                        <div id="map" class="leaflet-map"></div>
+                        
+                        <!-- Map Legend -->
+                        <div class="map-legend">
+                            <h4>Legend</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <span class="legend-marker lpg-marker"></span>
+                                    <span>LPG Vendors & Refill Stations</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-marker electric-marker"></span>
+                                    <span>Electric Stove Suppliers</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-marker biomass-marker"></span>
+                                    <span>Improved Biomass Stoves</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-marker user-marker"></span>
+                                    <span>Your Location</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vendor List -->
+                    <div class="vendor-list" id="vendorList">
+                        <h3>Nearby Vendors</h3>
+                        <div class="vendor-cards" id="vendorCards">
+                            <!-- Vendor cards will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="feedTab">
+            <span class="nav-icon">📱</span>
+            <span class="nav-label">Feed</span>
+        </button>
+        <button class="nav-item" data-tab="calculatorTab">
+            <span class="nav-icon">💰</span>
+            <span class="nav-label">Calculator</span>
+        </button>
+        <button class="nav-item" data-tab="forumTab">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">Forum</span>
+        </button>
+        <button class="nav-item" data-tab="mapTab">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Map</span>
+        </button>
+    </nav>
+
+    <!-- Add Story Modal -->
+    <div class="modal" id="addStoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Your Story</h3>
+                <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+            </div>
+            <form class="story-form" id="storyForm">
+                <div class="form-group">
+                    <label for="storyTitle">Story Title *</label>
+                    <input type="text" id="storyTitle" name="title" required maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="storyContent">Your Story *</label>
+                    <textarea id="storyContent" name="content" required maxlength="500" 
+                              placeholder="Share your clean cooking journey..."></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span>/500
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="storyLocation">Location</label>
+                    <input type="text" id="storyLocation" name="location" placeholder="e.g., Nairobi, Kenya">
+                </div>
+
+                <div class="form-group">
+                    <label for="fuelType">Fuel Type</label>
+                    <select id="fuelType" name="fuel_type">
+                        <option value="">Select fuel type</option>
+                        <option value="LPG">LPG</option>
+                        <option value="electric">Electric</option>
+                        <option value="improved_biomass">Improved Biomass</option>
+                        <option value="charcoal">Charcoal</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="authorName">Your Name *</label>
+                    <input type="text" id="authorName" name="author_name" required maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="storyImage">Add Photo (optional)</label>
+                    <input type="file" id="storyImage" name="image" accept="image/*">
+                    <div class="file-info">Max size: 5MB</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="btn-text">Share Story</span>
+                        <span class="btn-spinner" style="display: none;">
+                            <div class="spinner-small"></div>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Thread Modal -->
+    <div class="modal" id="newThreadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Start New Discussion</h3>
+                <button class="close-btn" id="closeThreadModalBtn" aria-label="Close modal">&times;</button>
+            </div>
+            <form class="thread-form" id="threadForm">
+                <div class="form-group">
+                    <label for="threadTitle">Discussion Title *</label>
+                    <input type="text" id="threadTitle" name="title" required maxlength="100" 
+                           placeholder="e.g., Best LPG suppliers in Nairobi?">
+                </div>
+                
+                <div class="form-group">
+                    <label for="threadContent">Your Question or Topic *</label>
+                    <textarea id="threadContent" name="content" required maxlength="500" 
+                              placeholder="Describe your question or start a discussion..."></textarea>
+                    <div class="char-count">
+                        <span id="threadCharCount">0</span>/500
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="threadAuthor">Your Name *</label>
+                    <input type="text" id="threadAuthor" name="author_name" required maxlength="50">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelThreadBtn">Cancel</button>
+                    <button type="submit" class="btn-primary" id="submitThreadBtn">
+                        <span class="btn-text">Start Discussion</span>
+                        <span class="btn-spinner" style="display: none;">
+                            <div class="spinner-small"></div>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <span class="toast-message" id="toastMessage"></span>
+        </div>
+    </div>
+
+    <!-- Added Leaflet JavaScript for map functionality -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>
